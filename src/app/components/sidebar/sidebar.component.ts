@@ -16,6 +16,7 @@ export class SidebarComponent {
     { type: 'email', label: 'Email' },
     { type: 'checkbox', label: 'Checkbox' },
     { type: 'radio', label: 'Radio Button' },
+    { type: 'dropdown', label: 'Dropdown' },
     { type: 'button', label: 'Button' },
   ];
 }

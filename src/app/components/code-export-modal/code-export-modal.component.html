@@ -1,0 +1,19 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="close.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Generated Form Code</h2>
+      <button class="close-btn" (click)="close.emit()">✕</button>
+    </div>
+    <div class="modal-body">
+
+<textarea class="code-textarea" readonly>
+{{ generatedCode }}
+</textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="copyToClipboard()">📋 Copy to Clipboard</button>
+      <button class="btn btn-success" (click)="downloadCode()">⬇️ Download HTML</button>
+      <button class="btn btn-secondary" (click)="close.emit()">Close</button>
+    </div>
+  </div>
+</div>

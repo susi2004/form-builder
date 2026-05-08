@@ -27,7 +27,6 @@ export class CodeModalComponent {
     );
     this.showModal = true;
   }
-
   // Goes through each element in the JSON array and builds a string
   private buildAngularTemplate(elements: FormElement[]): string {
     const lines: string[] = [];

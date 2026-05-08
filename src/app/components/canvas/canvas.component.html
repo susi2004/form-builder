@@ -4,7 +4,10 @@
       Form Canvas
       <span class="badge">{{ formService.formElements.length }} elements</span>
     </span>
-    <button class="btn btn-danger" (click)="clearAll()">Clear All</button>
+    <div>
+      <button class="btn btn-danger" (click)="clearAll()">Clear All</button>
+      <button class="btn" style="background: #28a745; color: white; border-color: #28a745; margin-left: 5px;" (click)="exportCode()">📤 Export Code</button>
+    </div>
   </div>
 
   <div
@@ -18,36 +21,147 @@
       ⬇ Drag and drop components here
     </div>
 
-    <div *ngFor="let el of formService.formElements" class="form-element">
-      <ng-container *ngIf="el.type === 'text' || el.type === 'email'">
-        <label>{{ el.label }}</label>
-        <input [type]="el.type" [placeholder]="'Enter ' + el.label" disabled />
-      </ng-container>
+    <div *ngFor="let el of formService.formElements" class="form-element" [ngStyle]="getElementStyle(el)">
+      <!-- Action Buttons -->
+      <div class="element-actions">
+        <button class="edit-btn" (click)="toggleEditing(el.id)" [class.active]="editingElement === el.id" title="Edit properties">⚙</button>
+        <button class="delete-btn" (click)="deleteElement(el.id)" title="Delete element">✕</button>
+      </div>
 
-      <ng-container *ngIf="el.type === 'textarea'">
-        <label>{{ el.label }}</label>
-        <textarea disabled placeholder="Enter text..."></textarea>
-      </ng-container>
-
-      <ng-container *ngIf="el.type === 'checkbox'">
-        <div class="inline-field">
-          <input type="checkbox" disabled />
-          <label>{{ el.label }}</label>
+      <!-- Property Editor -->
+      <div class="element-properties" *ngIf="editingElement === el.id">
+        <div class="property-group">
+          <label>Label:</label>
+          <input type="text" [(ngModel)]="el.label" placeholder="Field label" class="property-input">
         </div>
-      </ng-container>
 
-      <ng-container *ngIf="el.type === 'radio'">
-        <div class="inline-field">
-          <input type="radio" disabled />
-          <label>{{ el.label }}</label>
+        <div class="property-group" *ngIf="el.type !== 'checkbox' && el.type !== 'radio' && el.type !== 'button'">
+          <label>Placeholder:</label>
+          <input type="text" [(ngModel)]="el.placeholder" placeholder="Field placeholder" class="property-input">
         </div>
-      </ng-container>
 
-      <ng-container *ngIf="el.type === 'button'">
-        <button class="preview-btn" disabled>{{ el.label }}</button>
-      </ng-container>
+        <div class="property-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="el.required"> Required Field
+          </label>
+        </div>
 
-      <button class="delete-btn" (click)="deleteElement(el.id)">✕</button>
+        <!-- Dropdown Options Editor -->
+        <div class="property-group" *ngIf="el.type === 'dropdown'">
+          <label>Options:</label>
+          <div class="options-list">
+            <div class="option-item" *ngFor="let opt of el.options; let i = index">
+              <input type="text" [(ngModel)]="opt.label" placeholder="Option label">
+              <button (click)="removeOption(el, i)">Remove</button>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <input type="text" [(ngModel)]="newOptionLabel[el.id]" placeholder="New option name" class="property-input" style="flex: 1;">
+            <button class="btn-add-option" (click)="addOption(el)">Add</button>
+          </div>
+        </div>
+
+        <!-- Color Customization -->
+        <div class="property-group">
+          <label>Background Color:</label>
+          <div class="color-picker-group">
+            <input type="color" [(ngModel)]="el.bgColor" class="color-input">
+            <input type="text" [(ngModel)]="el.bgColor" class="property-input" placeholder="#ffffff">
+          </div>
+        </div>
+
+        <div class="property-group">
+          <label>Text Color:</label>
+          <div class="color-picker-group">
+            <input type="color" [(ngModel)]="el.textColor" class="color-input">
+            <input type="text" [(ngModel)]="el.textColor" class="property-input" placeholder="#333333">
+          </div>
+        </div>
+
+        <div class="property-group">
+          <label>Border Color:</label>
+          <div class="color-picker-group">
+            <input type="color" [(ngModel)]="el.borderColor" class="color-input">
+            <input type="text" [(ngModel)]="el.borderColor" class="property-input" placeholder="#cccccc">
+          </div>
+        </div>
+
+        <div class="property-group">
+          <label>Border Radius (px):</label>
+          <input type="number" [(ngModel)]="el.borderRadius" class="property-input" min="0" max="50">
+        </div>
+
+        <div class="property-group">
+          <label>Padding (px):</label>
+          <input type="number" [(ngModel)]="el.padding" class="property-input" min="0" max="50">
+        </div>
+
+        <button class="btn-sm" (click)="stopEditing()">✓ Done</button>
+      </div>
+
+      <!-- Form Element Display -->
+      <div class="element-display" [class.editing]="editingElement === el.id">
+        <ng-container *ngIf="el.type === 'text' || el.type === 'email'">
+          <label [style.color]="el.textColor">{{ el.label }} <span class="required-star" *ngIf="el.required">*</span></label>
+          <input 
+            [type]="el.type" 
+            [placeholder]="el.placeholder || 'Enter ' + el.label" 
+            [(ngModel)]="el.value"
+            [ngStyle]="{ 'background-color': el.bgColor, 'color': el.textColor, 'border-color': el.borderColor }"
+          />
+        </ng-container>
+
+        <ng-container *ngIf="el.type === 'textarea'">
+          <label [style.color]="el.textColor">{{ el.label }} <span class="required-star" *ngIf="el.required">*</span></label>
+          <textarea 
+            [placeholder]="el.placeholder || 'Enter text...'" 
+            [(ngModel)]="el.value"
+            [ngStyle]="{ 'background-color': el.bgColor, 'color': el.textColor, 'border-color': el.borderColor }"
+          ></textarea>
+        </ng-container>
+
+        <ng-container *ngIf="el.type === 'checkbox'">
+          <div class="inline-field">
+            <input type="checkbox" [(ngModel)]="el.value" />
+            <label [style.color]="el.textColor">{{ el.label }} <span class="required-star" *ngIf="el.required">*</span></label>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="el.type === 'radio'">
+          <div class="inline-field">
+            <input type="radio" name="radio-{{el.id}}" [(ngModel)]="el.value" />
+            <label [style.color]="el.textColor">{{ el.label }} <span class="required-star" *ngIf="el.required">*</span></label>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="el.type === 'dropdown'">
+          <label [style.color]="el.textColor">{{ el.label }} <span class="required-star" *ngIf="el.required">*</span></label>
+          <select 
+            [(ngModel)]="el.value"
+            [ngStyle]="{ 'background-color': el.bgColor, 'color': el.textColor, 'border-color': el.borderColor }"
+          >
+            <option value="">-- Select --</option>
+            <option *ngFor="let opt of el.options" [value]="opt.value">{{ opt.label }}</option>
+          </select>
+        </ng-container>
+
+        <ng-container *ngIf="el.type === 'button'">
+          <button 
+            class="preview-btn" 
+            [disabled]="true"
+            [ngStyle]="{ 'background-color': el.bgColor, 'color': el.textColor, 'border-color': el.borderColor }"
+          >
+            {{ el.label }}
+          </button>
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Code Export Modal -->
+<app-code-export-modal 
+  [isOpen]="showCodeModal" 
+  [generatedCode]="generatedCode" 
+  (close)="showCodeModal = false">
+</app-code-export-modal>
