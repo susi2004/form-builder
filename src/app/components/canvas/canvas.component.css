@@ -9,6 +9,7 @@
 
 * {
   box-sizing: border-box;
+  font-family: 'Poppins';
 }
 
 .toolbar {
@@ -107,13 +108,14 @@
   place-items: center;
   font-size: 14px;
   box-shadow: 0 8px 16px rgba(31, 50, 74, 0.08);
+  cursor: pointer;
 }
 
 .edit-btn {
   background: #ffffff;
 }
 
-.edit-btn.active {
+.edit-btn:hover {
   background: #2f8f65;
   color: white;
 }

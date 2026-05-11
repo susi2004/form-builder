@@ -13,7 +13,7 @@ export class FormBuilderService {
       checkbox: { label: 'Checkbox' },
       radio: { label: 'Radio Button' },
       dropdown: { label: 'Select Option' },
-      button: { label: 'Submit' },
+      button: { label: 'Button' },
     };
 
     const config = defaults[type] || { label: type };
