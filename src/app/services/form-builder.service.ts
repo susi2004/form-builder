@@ -15,7 +15,6 @@ export class FormBuilderService {
       dropdown: { label: 'Select Option' },
       button: { label: 'Button' },
     };
-
     const config = defaults[type] || { label: type };
     this.formElements.push({
       id: Date.now(),

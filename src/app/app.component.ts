@@ -9,8 +9,8 @@ import { CanvasComponent } from './components/canvas/canvas.component';
   selector: 'app-root',
   standalone: true,
   imports: [
-    CommonModule,        // for *ngIf, *ngFor
-    CdkDropListGroup,    // drag-drop grouping
+    CommonModule,     
+    CdkDropListGroup, 
     SidebarComponent,
     CanvasComponent,
   ],

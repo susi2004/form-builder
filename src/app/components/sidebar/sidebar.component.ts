@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CdkDrag, CdkDropList } from '@angular/cdk/drag-drop'; // 👈 add CdkDropList
+import { CdkDrag, CdkDropList } from '@angular/cdk/drag-drop'; 
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, CdkDrag, CdkDropList], // 👈 add CdkDropList here
+  imports: [CommonModule, CdkDrag, CdkDropList],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
 })
